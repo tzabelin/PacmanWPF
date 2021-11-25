@@ -3,6 +3,7 @@ using System.Windows.Input;
 using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace Entities
 {
@@ -104,90 +105,92 @@ namespace Entities
             };
             Board.Children.Add(sprite);
         }
-        /* Sets direction. First calls wave algorithm, fills empty matrix with it, then find path back from 
-         * endpoint - pacman marking way with -1s since all other numbers are positive and depend on area.*/
-        public void set_direction(GameArea.GameBoard board, Pacman packman)
+
+        #region Direction
+        /* Sets direction. Algorithm adds all vertex's neighbors in queue, that adds their neighbors and so on. 
+         It starts at the end point - pacman. Length of the route increases by 1 per iteration. When it reaches blinky
+         the shortest way is found and it returns.*/
+
+        private class Vertex
         {
-            int [,] matrix=new int[board.map.GetLength(0), board.map.GetLength(0)];
-            int x_dest = packman.x;
-            int y_dest = packman.y;
-            matrix[x,y] = 1;
-            wave(ref matrix, ref board, this.x, this.y, x_dest, y_dest, 1);
-            
-            while ((x_dest != x) || (y_dest != y))
+            public Vertex(int _x, int _y)
             {
-
-                if (y_dest + 1 < matrix.GetLength(1) && matrix[x_dest, y_dest + 1] == matrix[x_dest, y_dest] - 1)
-                {
-                    matrix[x_dest, y_dest] = -1;
-                    y_dest = y_dest + 1;
-                    continue;
-                }
-                if (y_dest > 0 && matrix[x_dest, y_dest - 1] == matrix[x_dest, y_dest] - 1)
-                {
-                    matrix[x_dest, y_dest] = -1;
-                    y_dest = y_dest - 1;
-                    continue;
-                }
-                if (x_dest + 1 < matrix.GetLength(0) && matrix[x_dest + 1, y_dest] == matrix[x_dest, y_dest] - 1)
-                {
-                    matrix[x_dest, y_dest] = -1;
-                    x_dest = x_dest + 1;
-                    continue;
-                }
-                if (x_dest > 0 && matrix[x_dest - 1, y_dest] == matrix[x_dest, y_dest] - 1)
-                {
-                    matrix[x_dest, y_dest] = -1;
-                    x_dest = x_dest - 1;
-                    continue;
-                }
+                x = _x;
+                y = _y;
             }
-            
-            if (y_dest + 1 < matrix.GetLength(1) && matrix[x_dest, y_dest + 1] == -1)
-            {
-                this.direction = directions.Right;
-            }
-            if (y_dest > 0 && matrix[x_dest, y_dest - 1] == -1)
-            {
-                this.direction = directions.Left;
-            }
-            if (x_dest + 1 < matrix.GetLength(0) && matrix[x_dest + 1, y_dest] == -1)
-            {
-                this.direction = directions.Down;
-            }
-            if (x_dest > 0 && matrix[x_dest - 1, y_dest] == -1)
-            {
-                this.direction = directions.Up;
-            }
-
+            public int x { get; set; }
+            public int y { get; set; }
         }
-        /* Wave algorithm to find the shortest way to pacman*/
-        private void wave(ref int[,] matrix, ref GameArea.GameBoard board, int x_org, int y_org, int x_dest, int y_dest, int count)
+
+        /*Cheks if a vertex is valid for the route. Also chaks that no vertex is visited twice.*/
+        bool[,] DirectionCheker;
+        private bool AddNewVertex(int x, int y, GameArea.GameBoard board)
         {
-            if (x_org == x_dest && y_org == y_dest)
-                return;
+            if (y < board.map.GetLength(1) && y > 0 && x < board.map.GetLength(0) && x > 0
+                && board.map[x, y].type != GameArea.Tile.types.wall && !DirectionCheker[x, y])
+            {
+                DirectionCheker[x, y] = true;
+                return true;
+            }
+            return false;
+        }
 
-            if (y_org + 1 < matrix.GetLength(1) && board.map[x_org, y_org + 1].type != GameArea.Tile.types.wall && (matrix[x_org, y_org + 1] == 0 || matrix[x_org, y_org + 1] > count + 1))
+        public void set_direction(GameArea.GameBoard board, Pacman pacman)
+        {
+            DirectionCheker = new bool[board.map.GetLength(0), board.map.GetLength(1)];
+            if (this.y == pacman.y && this.x == pacman.x)
+            { return; }
+
+            Queue <Vertex> vertices=new Queue<Vertex>();
+            vertices.Enqueue(new Vertex(pacman.x, pacman.y));
+
+            while(vertices.Count>0)
             {
-                matrix[x_org, y_org + 1] = count + 1;
-                wave(ref matrix, ref board, x_org, y_org + 1, x_dest, y_dest, count + 1);
-            }
-            if (y_org > 0 && board.map[x_org, y_org - 1].type != GameArea.Tile.types.wall && (matrix[x_org, y_org - 1] == 0 || matrix[x_org, y_org - 1] > count + 1))
-            {
-                matrix[x_org, y_org - 1] = count + 1;
-                wave(ref matrix, ref board, x_org, y_org - 1, x_dest, y_dest, count + 1);
-            }
-            if (x_org + 1 < matrix.GetLength(0) && board.map[x_org + 1, y_org].type != GameArea.Tile.types.wall && (matrix[x_org + 1, y_org] == 0 || matrix[x_org + 1, y_org] > count + 1))
-            {
-                matrix[x_org + 1, y_org] = count + 1;
-                wave(ref matrix, ref board, x_org + 1, y_org, x_dest, y_dest, count + 1);
-            }
-            if (x_org > 0 && board.map[x_org - 1, y_org].type != GameArea.Tile.types.wall && (matrix[x_org - 1, y_org] == 0 || matrix[x_org - 1, y_org] > count + 1))
-            {
-                matrix[x_org - 1, y_org] = count + 1;
-                wave(ref matrix, ref board, x_org - 1, y_org, x_dest, y_dest, count + 1);
+                Vertex v = vertices.Dequeue();
+                if (AddNewVertex(v.x, v.y + 1, board))
+                {
+                    if (v.y + 1 == this.y && v.x == this.x)
+                    {
+                        this.direction = directions.Left;
+                        vertices.Clear();
+                        return;
+                    }
+                    vertices.Enqueue(new Vertex(v.x, v.y + 1));
+                }
+                if (AddNewVertex(v.x, v.y - 1, board))
+                {
+                    if (v.y - 1 == this.y && v.x == this.x)
+                    {
+                        this.direction = directions.Right;
+                        vertices.Clear();
+                        return;
+                    }
+                    vertices.Enqueue(new Vertex(v.x, v.y - 1));
+                }
+                if (AddNewVertex(v.x + 1, v.y, board))
+                {
+                    if (v.y == this.y && v.x+1 == this.x)
+                    {
+                        this.direction = directions.Up;
+                        vertices.Clear();
+                        return;
+                    }
+                    vertices.Enqueue(new Vertex(v.x + 1, v.y ));
+                }
+                if (AddNewVertex(v.x - 1, v.y,  board))
+                {
+                    if (v.y == this.y && v.x-1 == this.x)
+                    {
+                        this.direction = directions.Down;
+                        vertices.Clear();
+                        return;
+                    }
+                    vertices.Enqueue(new Vertex(v.x - 1, v.y));
+                }
             }
         }
+        #endregion
+       
         override public void Draw(Canvas Board, GameArea.GameBoard board)
         {
             sprite.Width = Board.ActualWidth / board.map.GetLength(0);
