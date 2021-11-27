@@ -4,6 +4,7 @@ using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System.Windows.Media.Imaging;
 
 namespace Entities
 {
@@ -31,13 +32,13 @@ namespace Entities
             switch (direction)
             {
                 case directions.Right:
-                    if ((y < Board.map.GetLength(1)) && (Board.map[this.x, this.y + 1]).type != GameArea.Tile.types.wall) { this.y++; }
+                    if ((y+1 < Board.map.GetLength(1)) && (Board.map[this.x, this.y + 1]).type != GameArea.Tile.types.wall) { this.y++; }
                     break;
                 case directions.Left:
                     if ((y > 0) && (Board.map[this.x, this.y -1]).type != GameArea.Tile.types.wall) { this.y--; }
                     break;
                 case directions.Down:
-                    if ((x < Board.map.GetLength(0)) && (Board.map[this.x+1, this.y]).type != GameArea.Tile.types.wall) { this.x++; }
+                    if ((x+1 < Board.map.GetLength(0)) && (Board.map[this.x+1, this.y]).type != GameArea.Tile.types.wall) { this.x++; }
                     break;
                 case directions.Up:
                     if ((x > 0) && (Board.map[this.x-1, this.y]).type != GameArea.Tile.types.wall) { this.x--; }
@@ -55,11 +56,14 @@ namespace Entities
 
     class Pacman : Entity
     {
-        public Pacman(int _x, int _y, Canvas Board) : base(_x, _y)
+        public Pacman(int _x, int _y, Canvas Board, BitmapImage Sprites) : base(_x, _y)
         {
-            sprite = new Ellipse()
+            ImageBrush imgBrush = new ImageBrush();
+            imgBrush.ImageSource = Sprites;
+            imgBrush.Viewbox = new System.Windows.Rect(0, 0, 0.07, 0.09);
+            sprite = new Rectangle()
             {
-                Fill = Brushes.Yellow
+                Fill = imgBrush
             };
             Board.Children.Add(sprite);
         }
@@ -97,11 +101,14 @@ namespace Entities
 
     class Blinky:Entity
     {
-        public Blinky(int _x, int _y, Canvas Board) : base(_x, _y)
+        public Blinky(int _x, int _y, Canvas Board, BitmapImage Sprites) : base(_x, _y)
         {
-            sprite = new Ellipse()
+            ImageBrush imgBrush = new ImageBrush();
+            imgBrush.ImageSource = Sprites;
+            imgBrush.Viewbox = new System.Windows.Rect(0.0062, 0.4, 0.0805, 0.1);
+            sprite = new Rectangle()
             {
-                Fill = Brushes.Red
+                Fill = imgBrush
             };
             Board.Children.Add(sprite);
         }
@@ -201,11 +208,14 @@ namespace Entities
     }
     class Clyde : Entity
     {
-        public Clyde(int _x, int _y, Canvas Board) : base(_x, _y)
+        public Clyde(int _x, int _y, Canvas Board, BitmapImage Sprites) : base(_x, _y)
         {
-            sprite = new Ellipse()
+            ImageBrush imgBrush = new ImageBrush();
+            imgBrush.ImageSource = Sprites;
+            imgBrush.Viewbox = new System.Windows.Rect(0.0062, 0.71, 0.0805, 0.1);
+            sprite = new Rectangle()
             {
-                Fill = Brushes.Orange
+                Fill = imgBrush
             };
             Board.Children.Add(sprite);
         }

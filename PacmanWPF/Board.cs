@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Shapes;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 
 namespace GameArea
@@ -14,7 +15,7 @@ namespace GameArea
 
         /* Constructor of GameBoard. Matrix represents game area where 0 are empty spaces, -1 walls, -2 food,
          * -3 powerups*/
-        public GameBoard(int[,] matrix, Canvas Window)
+        public GameBoard(int[,] matrix, Canvas Window, BitmapImage sprites)
         {
             currentScore = 0;
             maxScore = 0;
@@ -26,17 +27,17 @@ namespace GameArea
                     switch (matrix[i, j])
                     {
                         case 0:
-                            map[i, j] = new GameArea.Tile(Window, GameArea.Tile.types.passage);
+                            map[i, j] = new GameArea.Tile(Window,sprites, GameArea.Tile.types.passage);
                             break;
                         case -1:
-                            map[i, j] = new GameArea.Tile(Window, GameArea.Tile.types.wall);
+                            map[i, j] = new GameArea.Tile(Window,sprites, GameArea.Tile.types.wall);
                             break;
                         case -2:
-                            map[i, j] = new GameArea.Tile(Window, GameArea.Tile.types.food);
+                            map[i, j] = new GameArea.Tile(Window,sprites, GameArea.Tile.types.food);
                             maxScore++;
                             break;
                         case -3:
-                            map[i, j] = new GameArea.Tile(Window, GameArea.Tile.types.powerup);
+                            map[i, j] = new GameArea.Tile(Window, sprites, GameArea.Tile.types.powerup);
                             break;
                     }
 
@@ -82,14 +83,17 @@ namespace GameArea
         }
     }
 
+    /* Represents one tile of board. Awaits image with specific location of sprites on it.*/
     class Tile
     {
         public enum types : int { passage = 0, wall = -1, food = -2, powerup = -3 };
         public types type;
         private Shape sprite;
 
-        public Tile(Canvas Window, types t)
+        public Tile(Canvas Window, BitmapImage Sprites, types t)
         {
+            ImageBrush imgBrush= new ImageBrush();
+            imgBrush.ImageSource = Sprites;
             switch (t)
             {
                 case types.passage:
@@ -97,25 +101,28 @@ namespace GameArea
                     break;
                 case types.wall:
                     type = types.wall;
+                    imgBrush.Viewbox = new System.Windows.Rect(0.72, 0.31, 0.07, 0.09);
                     sprite = new Rectangle
                     {
-                        Fill = Brushes.Black
+                        Fill = imgBrush
                     };
                     Window.Children.Add(sprite);
                     break;
                 case types.food:
                     type = types.food;
+                    imgBrush.Viewbox = new System.Windows.Rect(0.79, 0.31, 0.07, 0.09);
                     sprite = new Rectangle()
                     {
-                        Fill = Brushes.Pink
+                        Fill = imgBrush
                     };
                     Window.Children.Add(sprite);
                     break;
                 case types.powerup:
                     type = types.powerup;
-                    sprite = new Ellipse()
+                    imgBrush.Viewbox = new System.Windows.Rect(0.15, 0.31, 0.07, 0.09);
+                    sprite = new Rectangle()
                     {
-                        Fill = Brushes.Blue
+                        Fill = imgBrush
                     };
                     Window.Children.Add(sprite);
                     break;
@@ -123,29 +130,12 @@ namespace GameArea
         }
 
         /* Draws all tiles according to their types*/
-        public void Draw(Canvas Window,int x,int y, GameArea.GameBoard board)
+        public void Draw(Canvas Window, int x, int y, GameArea.GameBoard board)
         {
-            if (type == types.wall)
-            {
-                sprite.Width = Window.ActualWidth / board.map.GetLength(0);
-                sprite.Height = Window.ActualHeight / board.map.GetLength(1);
-                Canvas.SetTop(sprite, y * Window.ActualHeight / board.map.GetLength(1));
-                Canvas.SetLeft(sprite, x * Window.ActualWidth / board.map.GetLength(0));
-            }
-            if (type == types.food)
-            {
-                sprite.Width = Window.ActualWidth / board.map.GetLength(0) / 5;
-                sprite.Height = Window.ActualHeight / board.map.GetLength(1) / 5;
-                Canvas.SetTop(sprite, y * Window.ActualHeight / board.map.GetLength(1) + 2 * Window.ActualHeight / board.map.GetLength(1) / 5);
-                Canvas.SetLeft(sprite, x * Window.ActualWidth / board.map.GetLength(0) + 2 * Window.ActualWidth / board.map.GetLength(0) / 5);
-            }
-            if (type == types.powerup)
-            {
-                sprite.Width = Window.ActualWidth / board.map.GetLength(0) / 2;
-                sprite.Height = Window.ActualHeight / board.map.GetLength(1) / 2;
-                Canvas.SetTop(sprite, y * Window.ActualHeight / board.map.GetLength(1) + Window.ActualHeight / board.map.GetLength(1) / 4);
-                Canvas.SetLeft(sprite, x * Window.ActualWidth / board.map.GetLength(0) + Window.ActualWidth / board.map.GetLength(0) / 4);
-            }
+            sprite.Width = Window.ActualWidth / board.map.GetLength(0);
+            sprite.Height = Window.ActualHeight / board.map.GetLength(1);
+            Canvas.SetTop(sprite, y * Window.ActualHeight / board.map.GetLength(1));
+            Canvas.SetLeft(sprite, x * Window.ActualWidth / board.map.GetLength(0));
         }
 
         /* Tries to remove the tile from canvas. Catches an exception if it was not there*/
