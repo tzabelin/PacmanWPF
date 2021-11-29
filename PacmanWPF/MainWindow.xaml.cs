@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using System.Windows.Input;
 
 namespace PackmanWPF
@@ -12,7 +13,7 @@ namespace PackmanWPF
         public MainWindow()
         {
             InitializeComponent();
-            game = new Game(GameWindow);
+            game = new Game(GameWindow,new BitmapImage(new Uri(@"Sprites.png", UriKind.Relative)));
             this.Title = "Score: " + game.getCurrentScore();
             gameTickTimer.Tick += GameTickTimer_Tick;
         }

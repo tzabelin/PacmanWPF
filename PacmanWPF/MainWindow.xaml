@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PackmanWPF"
         mc:Ignorable="d"
-        Title="GameWindow" Height="450" Width="800" ContentRendered="Window_ContentRendered" KeyDown="Window_KeyDown" SizeToContent="WidthAndHeight">
-
-    <Canvas Name="GameWindow" ClipToBounds="True" Width="400" Height="400" >
+        Title="GameWindow" Height="1697.728" Width="4072.727" ContentRendered="Window_ContentRendered" KeyDown="Window_KeyDown" SizeToContent="WidthAndHeight">
+    
+    <Canvas Name="GameWindow" ClipToBounds="True" Background="Black" Width="400" Height="400" RenderTransformOrigin="-1.748,0.338" >
     </Canvas>
 </Window>
