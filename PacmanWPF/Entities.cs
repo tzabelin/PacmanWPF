@@ -14,7 +14,7 @@ namespace Entities
         public int y { get; private set; }
         protected enum directions:int { Left=1, Right=-1, Up=2, Down=-2 };
         protected directions direction;
-        public abstract void Draw(Canvas Board, GameArea.GameBoard board);
+        public abstract void Draw(Canvas Board, GameBoard board);
         protected Shape sprite;
         public Entity(int _x, int _y)
         {
@@ -27,21 +27,21 @@ namespace Entities
             direction = (directions) (- 1 * (int)direction);
 
         }
-        public void move(GameArea.GameBoard Board)
+        public void move(GameBoard Board)
         {
             switch (direction)
             {
                 case directions.Right:
-                    if ((y+1 < Board.map.GetLength(1)) && (Board.map[this.x, this.y + 1]).type != GameArea.Tile.types.wall) { this.y++; }
+                    if ((y+1 < Board.map.GetLength(1)) && (Board.map[this.x, this.y + 1]).type != GameBoard.Tile.types.wall) { this.y++; }
                     break;
                 case directions.Left:
-                    if ((y > 0) && (Board.map[this.x, this.y -1]).type != GameArea.Tile.types.wall) { this.y--; }
+                    if ((y > 0) && (Board.map[this.x, this.y -1]).type != GameBoard.Tile.types.wall) { this.y--; }
                     break;
                 case directions.Down:
-                    if ((x+1 < Board.map.GetLength(0)) && (Board.map[this.x+1, this.y]).type != GameArea.Tile.types.wall) { this.x++; }
+                    if ((x+1 < Board.map.GetLength(0)) && (Board.map[this.x+1, this.y]).type != GameBoard.Tile.types.wall) { this.x++; }
                     break;
                 case directions.Up:
-                    if ((x > 0) && (Board.map[this.x-1, this.y]).type != GameArea.Tile.types.wall) { this.x--; }
+                    if ((x > 0) && (Board.map[this.x-1, this.y]).type != GameBoard.Tile.types.wall) { this.x--; }
                     break;
             }
         }
@@ -90,7 +90,7 @@ namespace Entities
             }
         }
 
-        override public void Draw(Canvas Board, GameArea.GameBoard board)
+        override public void Draw(Canvas Board, GameBoard board)
         {
             sprite.Width = Board.ActualWidth / board.map.GetLength(0);
             sprite.Height = Board.ActualWidth / board.map.GetLength(1);
@@ -131,10 +131,10 @@ namespace Entities
 
         /*Cheks if a vertex is valid for the route. Also chaks that no vertex is visited twice.*/
         bool[,] DirectionCheker;
-        private bool AddNewVertex(int x, int y, GameArea.GameBoard board)
+        private bool AddNewVertex(int x, int y, GameBoard board)
         {
             if (y < board.map.GetLength(1) && y > 0 && x < board.map.GetLength(0) && x > 0
-                && board.map[x, y].type != GameArea.Tile.types.wall && !DirectionCheker[x, y])
+                && board.map[x, y].type != GameBoard.Tile.types.wall && !DirectionCheker[x, y])
             {
                 DirectionCheker[x, y] = true;
                 return true;
@@ -142,7 +142,7 @@ namespace Entities
             return false;
         }
 
-        public void set_direction(GameArea.GameBoard board, Pacman pacman)
+        public void set_direction(GameBoard board, Pacman pacman)
         {
             DirectionCheker = new bool[board.map.GetLength(0), board.map.GetLength(1)];
             if (this.y == pacman.y && this.x == pacman.x)
@@ -198,7 +198,7 @@ namespace Entities
         }
         #endregion
        
-        override public void Draw(Canvas Board, GameArea.GameBoard board)
+        override public void Draw(Canvas Board, GameBoard board)
         {
             sprite.Width = Board.ActualWidth / board.map.GetLength(0);
             sprite.Height = Board.ActualWidth / board.map.GetLength(1);
@@ -238,7 +238,7 @@ namespace Entities
             }
         }
 
-        override public void Draw(Canvas Board, GameArea.GameBoard board)
+        override public void Draw(Canvas Board, GameBoard board)
         {
             sprite.Width = Board.ActualWidth / board.map.GetLength(0);
             sprite.Height = Board.ActualWidth / board.map.GetLength(1);
