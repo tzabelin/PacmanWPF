@@ -12,10 +12,10 @@ namespace Entities
     {
         public int x { get; private set; }
         public int y { get; private set; }
-        protected enum directions:int { Left=1, Right=-1, Up=2, Down=-2 };
+        protected enum directions : int { Left = 1, Right = -1, Up = 2, Down = -2 };
         protected directions direction;
         public abstract void Draw(Canvas Board, GameBoard board);
-        protected Shape sprite;
+        protected Sprite sprite;
         public Entity(int _x, int _y)
         {
             this.x = _x;
@@ -24,7 +24,7 @@ namespace Entities
         }
         public void reverse_direction()
         {
-            direction = (directions) (- 1 * (int)direction);
+            direction = (directions)(-1 * (int)direction);
 
         }
         public void move(GameBoard Board)
@@ -32,16 +32,16 @@ namespace Entities
             switch (direction)
             {
                 case directions.Right:
-                    if ((y+1 < Board.map.GetLength(1)) && (Board.map[this.x, this.y + 1]).type != GameBoard.Tile.types.wall) { this.y++; }
+                    if ((y + 1 < Board.map.GetLength(1)) && (Board.map[this.x, this.y + 1]).type != GameBoard.Tile.types.wall) { this.y++; }
                     break;
                 case directions.Left:
-                    if ((y > 0) && (Board.map[this.x, this.y -1]).type != GameBoard.Tile.types.wall) { this.y--; }
+                    if ((y > 0) && (Board.map[this.x, this.y - 1]).type != GameBoard.Tile.types.wall) { this.y--; }
                     break;
                 case directions.Down:
-                    if ((x+1 < Board.map.GetLength(0)) && (Board.map[this.x+1, this.y]).type != GameBoard.Tile.types.wall) { this.x++; }
+                    if ((x + 1 < Board.map.GetLength(0)) && (Board.map[this.x + 1, this.y]).type != GameBoard.Tile.types.wall) { this.x++; }
                     break;
                 case directions.Up:
-                    if ((x > 0) && (Board.map[this.x-1, this.y]).type != GameBoard.Tile.types.wall) { this.x--; }
+                    if ((x > 0) && (Board.map[this.x - 1, this.y]).type != GameBoard.Tile.types.wall) { this.x--; }
                     break;
             }
         }
@@ -52,6 +52,31 @@ namespace Entities
             this.y = y;
             this.direction = directions.Right;
         }
+
+        protected class Sprite
+        {
+            public ImageBrush brush { get; set; }
+            public Shape image { get; private set; }
+
+            public Sprite(ImageBrush imageBrush)
+            {
+                brush = imageBrush;
+                image = new Rectangle()
+                {
+                    Fill = brush
+                };
+            }
+
+            public void SetDimensions(double width, double height)
+            {
+                this.image.Width = width;
+                this.image.Height = height;
+            }
+            public void MoveBrush(System.Windows.Rect position)
+            {
+                brush.Viewbox = position;
+            }
+        }
     }
 
     class Pacman : Entity
@@ -60,12 +85,9 @@ namespace Entities
         {
             ImageBrush imgBrush = new ImageBrush();
             imgBrush.ImageSource = Sprites;
-            imgBrush.Viewbox = new System.Windows.Rect(0, 0, 0.07, 0.09);
-            sprite = new Rectangle()
-            {
-                Fill = imgBrush
-            };
-            Board.Children.Add(sprite);
+            imgBrush.Viewbox = new System.Windows.Rect(0, 0, 0.07, 0.1);
+            sprite=new Sprite(imgBrush);
+            Board.Children.Add(sprite.image);
         }
         public void set_direction(KeyEventArgs e)
         {
@@ -92,10 +114,9 @@ namespace Entities
 
         override public void Draw(Canvas Board, GameBoard board)
         {
-            sprite.Width = Board.ActualWidth / board.map.GetLength(0);
-            sprite.Height = Board.ActualWidth / board.map.GetLength(1);
-            Canvas.SetTop(sprite, x* Board.ActualWidth / board.map.GetLength(1));
-            Canvas.SetLeft(sprite, y* Board.ActualWidth / board.map.GetLength(0));
+            sprite.SetDimensions(Board.ActualWidth / board.map.GetLength(0),Board.ActualWidth / board.map.GetLength(1));
+            Canvas.SetTop(sprite.image, x* Board.ActualWidth / board.map.GetLength(1));
+            Canvas.SetLeft(sprite.image, y* Board.ActualWidth / board.map.GetLength(0));
         }
     }
 
@@ -105,12 +126,9 @@ namespace Entities
         {
             ImageBrush imgBrush = new ImageBrush();
             imgBrush.ImageSource = Sprites;
-            imgBrush.Viewbox = new System.Windows.Rect(0.0062, 0.4, 0.0805, 0.1);
-            sprite = new Rectangle()
-            {
-                Fill = imgBrush
-            };
-            Board.Children.Add(sprite);
+            imgBrush.Viewbox = new System.Windows.Rect(0.0085, 0.4, 0.07, 0.1);
+            sprite = new Sprite(imgBrush);
+            Board.Children.Add(sprite.image);
         }
 
         #region Direction
@@ -200,10 +218,9 @@ namespace Entities
        
         override public void Draw(Canvas Board, GameBoard board)
         {
-            sprite.Width = Board.ActualWidth / board.map.GetLength(0);
-            sprite.Height = Board.ActualWidth / board.map.GetLength(1);
-            Canvas.SetTop(sprite, x * Board.ActualWidth / board.map.GetLength(1));
-            Canvas.SetLeft(sprite, y * Board.ActualWidth / board.map.GetLength(0));
+            sprite.SetDimensions(Board.ActualWidth / board.map.GetLength(0), Board.ActualWidth / board.map.GetLength(1));
+            Canvas.SetTop(sprite.image, x * Board.ActualWidth / board.map.GetLength(1));
+            Canvas.SetLeft(sprite.image, y * Board.ActualWidth / board.map.GetLength(0));
         }
     }
     class Clyde : Entity
@@ -212,12 +229,9 @@ namespace Entities
         {
             ImageBrush imgBrush = new ImageBrush();
             imgBrush.ImageSource = Sprites;
-            imgBrush.Viewbox = new System.Windows.Rect(0.0062, 0.71, 0.0805, 0.1);
-            sprite = new Rectangle()
-            {
-                Fill = imgBrush
-            };
-            Board.Children.Add(sprite);
+            imgBrush.Viewbox = new System.Windows.Rect(0.0062, 0.71, 0.07, 0.1);
+            sprite = new Sprite(imgBrush);
+            Board.Children.Add(sprite.image);
         }
         public void set_direction()
         {
@@ -240,10 +254,10 @@ namespace Entities
 
         override public void Draw(Canvas Board, GameBoard board)
         {
-            sprite.Width = Board.ActualWidth / board.map.GetLength(0);
-            sprite.Height = Board.ActualWidth / board.map.GetLength(1);
-            Canvas.SetTop(sprite, x * Board.ActualWidth / board.map.GetLength(1));
-            Canvas.SetLeft(sprite, y * Board.ActualWidth / board.map.GetLength(0));
+            sprite.brush.Viewbox = new System.Windows.Rect(sprite.brush.Viewbox.TopLeft.X+0.07, sprite.brush.Viewbox.TopLeft.Y, 0.07, 0.1);
+            sprite.SetDimensions (Board.ActualWidth / board.map.GetLength(0),  Board.ActualWidth / board.map.GetLength(1));
+            Canvas.SetTop(sprite.image, x * Board.ActualWidth / board.map.GetLength(1));
+            Canvas.SetLeft(sprite.image, y * Board.ActualWidth / board.map.GetLength(0));
         }
     }
 }

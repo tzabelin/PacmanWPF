@@ -140,7 +140,7 @@ class GameBoard
             try
             { Window.Children.Remove(sprite); }
             catch (Exception e)
-            { Console.WriteLine(e.Message); }
+            { Console.Error.WriteLine("Exception in canvas remove routine: {0}", e.Message); }
         }
     }
 }
