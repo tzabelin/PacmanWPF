@@ -66,17 +66,10 @@ public class Client
             sender.Close();
             Console.ReadKey();
         }
-        catch (ArgumentNullException ane)
-        {
-            Console.Error.WriteLine("ArgumentNullException : {0}", ane.ToString());
-        }
-        catch (SocketException se)
-        {
-            Console.Error.WriteLine("SocketException : {0}", se.ToString());
-        }
+      
         catch (Exception e)
         {
-            Console.Error.WriteLine("Unexpected exception : {0}", e.ToString());
+            Console.Error.WriteLine("Exception in net client: {0}", e.Message);
         }
     }
 }

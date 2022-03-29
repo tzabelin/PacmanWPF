@@ -134,13 +134,13 @@ class GameBoard
             Canvas.SetLeft(sprite, x * Window.ActualWidth / board.map.GetLength(0));
         }
 
-        /* Tries to remove the tile from canvas. Catches an exception if it was not there*/
+        /* Tries to remove the tile from canvas. Catches an exception if it was not there */
         public void Remove(Canvas Window)
         {
             try
             { Window.Children.Remove(sprite); }
             catch (Exception e)
-            { Console.WriteLine(e.Message); }
+            { Console.Error.WriteLine("Exception in canvas remove routine: {0}", e.Message); }
         }
     }
 }

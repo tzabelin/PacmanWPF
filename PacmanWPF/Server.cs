@@ -26,9 +26,7 @@ public class Server
             Socket handler = listener.Accept();
 
             string data = null;
-            byte[] bytes = null;
-
-            bytes = new byte[1024];
+            byte[] bytes = new byte[1024];
             int bytesRec = 0;
             while (Encoding.ASCII.GetString(bytes, 0, bytesRec) != "END")
             {
@@ -44,9 +42,10 @@ public class Server
             handler.Close();
             Console.ReadKey();
         }
+      
         catch (Exception e)
         {
-            Console.Error.WriteLine(e.ToString());
+            Console.Error.WriteLine("Exception in net server: {0}", e.Message);
         }
     }
 }
