@@ -42,6 +42,7 @@ public class Server
             handler.Close();
             Console.ReadKey();
         }
+      
         catch (Exception e)
         {
             Console.Error.WriteLine("Exception in net server: {0}", e.Message);

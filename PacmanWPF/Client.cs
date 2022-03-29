@@ -66,6 +66,7 @@ public class Client
             sender.Close();
             Console.ReadKey();
         }
+      
         catch (Exception e)
         {
             Console.Error.WriteLine("Exception in net client: {0}", e.Message);
